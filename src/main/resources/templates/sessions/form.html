@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Session</title>
+</head>
+<body>
+<h1>Create Session</h1>
+<form th:action="@{/sessions}" th:object="${session}" method="post">
+    <div>
+        <label>Client:</label>
+        <select th:field="*{client.id}">
+            <option value="">-- Select Client --</option>
+            <option th:each="client : ${clients}"
+                    th:value="${client.id}"
+                    th:text="${client.fullName}"></option>
+        </select>
+    </div>
+
+    <div>
+        <label>Photographer:</label>
+        <select th:field="*{photographer.id}">
+            <option value="">-- Select Photographer --</option>
+            <option th:each="photographer : ${photographers}"
+                    th:value="${photographer.id}"
+                    th:text="${photographer.fullName}"></option>
+        </select>
+    </div>
+
+    <div>
+        <label>Service:</label>
+        <select th:field="*{serviceType.id}">
+            <option value="">-- Select Service --</option>
+            <option th:each="service : ${services}"
+                    th:value="${service.id}"
+                    th:text="${service.name}"></option>
+        </select>
+    </div>
+
+    <div>
+        <label>Date & Time:</label>
+        <input type="datetime-local" th:field="*{startTime}" required>
+    </div>
+
+    <div>
+        <label>Status:</label>
+        <select th:field="*{status}">
+            <option value="planned">Planned</option>
+            <option value="completed">Completed</option>
+            <option value="canceled">Canceled</option>
+        </select>
+    </div>
+
+    <button type="submit">Create</button>
+</form>
+</body>
+</html>
