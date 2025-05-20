@@ -13,6 +13,9 @@ public interface PhotoSessionRepository extends JpaRepository<PhotoSession, Long
     List<PhotoSession> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
     List<PhotoSession> findByStatus(String status);
 
-    @Query("SELECT ps FROM PhotoSession ps WHERE ps.photographer.id = :photographerId")
-    List<PhotoSession> findByPhotographerId(Long photographerId);
+    @Query("SELECT ps FROM PhotoSession ps " +
+            "JOIN FETCH ps.client " +
+            "JOIN FETCH ps.photographer " +
+            "JOIN FETCH ps.serviceType")
+    List<PhotoSession> findAllWithDetails();
 }

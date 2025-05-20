@@ -3,51 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <title>Photo Sessions</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<h1>Photo Sessions</h1>
+<div class="container mt-4">
+  <h1>Photo Sessions</h1>
 
-<div class="search-form">
-  <form th:action="@{/sessions/search}" method="get">
-    <label>
-      Status:
-      <select name="status">
-        <option value="">All</option>
-        <option value="planned">Planned</option>
-        <option value="completed">Completed</option>
-        <option value="canceled">Canceled</option>
-      </select>
-    </label>
-    <button type="submit">Filter</button>
-  </form>
+  <div class="mb-3">
+    <a th:href="@{/sessions/new}" class="btn btn-primary">Create New photoSession</a>
+  </div>
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Client</th>
+      <th>Service</th>
+      <th>Photographer</th>
+      <th>Date & Time</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="photoSession : ${photoSessions}">
+      <td th:text="${photoSession.id}"></td>
+      <td th:text="${photoSession.client.fullName}"></td>
+      <td th:text="${photoSession.serviceType.name}"></td>
+      <td th:text="${photoSession.photographer.fullName}"></td>
+      <td th:text="${#temporals.format(photoSession.startTime, 'dd.MM.yyyy HH:mm')}"></td>
+      <td th:text="${photoSession.status}"></td>
+      <td>
+        <a th:href="@{/sessions/{id}(id=${photoSession.id})}" class="btn btn-info">View</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </div>
-
-<a th:href="@{/sessions/new}">Create New Session</a>
-
-<table>
-  <thead>
-  <tr>
-    <th>ID</th>
-    <th>Client</th>
-    <th>Service</th>
-    <th>Date & Time</th>
-    <th>Status</th>
-    <th>Actions</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr th:each="session : ${sessions}">
-    <td th:text="${session.id}"></td>
-    <td th:text="${session.client.fullName}"></td>
-    <td th:text="${session.serviceType.name}"></td>
-    <td th:text="${#temporals.format(session.startTime, 'dd.MM.yyyy HH:mm')}"></td>
-    <td th:text="${session.status}"></td>
-    <td>
-      <a th:href="@{/sessions/{id}(id=${session.id})}">View</a>
-    </td>
-  </tr>
-  </tbody>
-</table>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

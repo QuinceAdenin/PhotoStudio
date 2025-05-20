@@ -9,11 +9,13 @@
 <h1>Session Details</h1>
 
 <div>
-    <p><strong>ID:</strong> <span th:text="${session.id}"></span></p>
-    <p><strong>Client:</strong> <span th:text="${session.client.fullName}"></span></p>
-    <p><strong>Service:</strong> <span th:text="${session.serviceType.name}"></span></p>
-    <p><strong>Date:</strong> <span th:text="${#temporals.format(session.startTime, 'dd.MM.yyyy HH:mm')}"></span></p>
-    <p><strong>Status:</strong> <span th:text="${session.status}"></span></p>
+    <p><strong>ID:</strong> <span th:text="${photoSession.id}"></span></p>
+    <p><strong>Client:</strong> <span th:text="${photoSession.client?.fullName}"></span></p>
+    <p><strong>Photographer:</strong> <span th:text="${photoSession.photographer?.fullName}"></span></p>
+    <p><strong>Service:</strong> <span th:text="${photoSession.serviceType?.name}"></span></p>
+    <p><strong>Date:</strong> <span th:text="${#temporals.format(photoSession.startTime, 'dd.MM.yyyy HH:mm')}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${photoSession.status}"></span></p>
+    <p><strong>Notes:</strong> <span th:text="${photoSession.notes}"></span></p>
 </div>
 
 <a th:href="@{/sessions}">Back to list</a>

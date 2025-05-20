@@ -18,7 +18,7 @@ public class PhotoSessionService {
     }
 
     public List<PhotoSession> findAll() {
-        return photoSessionRepository.findAll();
+        return photoSessionRepository.findAllWithDetails();
     }
 
     public PhotoSession findById(Long id) {

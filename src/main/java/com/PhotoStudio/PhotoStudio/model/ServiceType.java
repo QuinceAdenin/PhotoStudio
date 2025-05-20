@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Duration;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "service_types")
@@ -20,6 +21,10 @@ public class ServiceType {
 
     private String description;
 
-    @Column(nullable = false)
-    private Duration duration;
+//    @Column(name = "duration")
+//    private Integer durationMinutes;
+
+    @Column(name = "duration", nullable = false)
+    private Integer durationHours; // Добавлено поле для часов
+
 }
