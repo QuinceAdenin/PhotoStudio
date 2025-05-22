@@ -74,7 +74,7 @@
                 <option
                         th:each="service : ${serviceTypes}"
                         th:value="${service.id}"
-                        th:text="${service.name} + ' (' + ${service.duration} + ' ч)'"
+                        th:text="${service.name} + ' (' + ${service.durationHours} + ' ч)'"
                 ></option>
             </select>
         </div>

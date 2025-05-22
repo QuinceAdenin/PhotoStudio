@@ -66,6 +66,12 @@ public class PhotoSessionController {
         return "sessions/form";
     }
 
+    @PostMapping
+    public String createSession(@ModelAttribute("photoSession") PhotoSession photoSession) {
+        photoSessionService.save(photoSession);
+        return "redirect:/sessions"; // Перенаправление на список сессий после сохранения
+    }
+
 //    @GetMapping("/search")
 //    public String searchSessions(Model model) {
 //        model.addAttribute("photoSessions", photoSessionService.findAll());
