@@ -2,40 +2,138 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Photo & Audio Studio</title>
+    <title>PhotoStudio - Панель управления</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+        }
+
         .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/studio-bg.jpg');
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/studio-bg.jpg');
             background-size: cover;
-            height: 100vh;
+            background-position: center;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             text-align: center;
+            padding: 2rem;
         }
-        .btn-custom {
-            background-color: #6c757d;
-            color: white;
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
             border: none;
-            padding: 10px 25px;
-            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        .btn-custom:hover {
-            background-color: #5a6268;
+
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .nav-button {
+            background: var(--secondary-color);
+            border-radius: 30px;
+            padding: 12px 25px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+
+        .stats-bar {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            margin: 2rem auto;
+            max-width: 800px;
         }
     </style>
 </head>
 <body>
 <div class="hero-section">
     <div>
-        <h1>Добро пожаловать в PhotoStudio</h1>
-        <p class="lead">Профессиональные фотосессии</p>
-        <div>
-            <a href="/sessions" class="btn btn-custom">Управление сессиями</a>
-            <a href="#" class="btn btn-custom">Наши услуги</a>
-            <a href="#" class="btn btn-custom">Контакты</a>
+        <h1 class="display-4 mb-4 fw-bold">Добро пожаловать в PhotoStudio</h1>
+        <p class="lead mb-5">Профессиональная система управления студией</p>
+
+        <div class="stats-bar d-flex justify-content-around">
+            <div>
+                <h4 class="mb-0">Сессии</h4>
+                <p class="mb-0" th:text="${sessionCount} ?: '0'">0</p>
+            </div>
+            <div>
+                <h4 class="mb-0">Клиенты</h4>
+                <p class="mb-0" th:text="${clientCount} ?: '0'">0</p>
+            </div>
+            <div>
+                <h4 class="mb-0">Сотрудники</h4>
+                <p class="mb-0" th:text="${employeeCount} ?: '0'">0</p>
+            </div>
+        </div>
+
+        <div class="dashboard-cards">
+            <a href="/sessions" class="card text-decoration-none text-dark card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-camera-retro card-icon"></i>
+                    <h3>Фотосессии</h3>
+                    <p class="text-muted">Управление расписанием и записями</p>
+                </div>
+            </a>
+
+            <a href="/clients" class="card text-decoration-none text-dark card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-users card-icon"></i>
+                    <h3>Клиенты</h3>
+                    <p class="text-muted">База клиентов и история записей</p>
+                </div>
+            </a>
+
+            <a href="/employees" class="card text-decoration-none text-dark card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-tie card-icon"></i>
+                    <h3>Сотрудники</h3>
+                    <p class="text-muted">Управление персоналом и графиком</p>
+                </div>
+            </a>
+
+            <a href="/service-types" class="card text-decoration-none text-dark card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-concierge-bell card-icon"></i>
+                    <h3>Услуги</h3>
+                    <p class="text-muted">Каталог услуг и прайс-лист</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="mt-5">
+            <a href="/sessions/new" class="btn nav-button text-white">
+                <i class="fas fa-plus-circle"></i> Новая запись
+            </a>
+            <a href="/calendar" class="btn nav-button text-white">
+                <i class="fas fa-calendar-alt"></i> Календарь
+            </a>
         </div>
     </div>
 </div>

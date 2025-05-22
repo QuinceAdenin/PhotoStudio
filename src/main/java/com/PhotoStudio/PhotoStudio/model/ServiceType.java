@@ -27,4 +27,7 @@ public class ServiceType {
     @Column(name = "duration", nullable = false)
     private Integer durationHours; // Добавлено поле для часов
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

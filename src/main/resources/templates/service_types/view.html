@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Информация об услуге</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <h1>Услуга: <span th:text="${serviceType.name}"></span></h1>
+  <div class="card">
+    <div class="card-body">
+      <p><strong>ID:</strong> <span th:text="${serviceType.id}"></span></p>
+      <p><strong>Описание:</strong> <span th:text="${serviceType.description ?: 'Нет описания'}"></span></p>
+      <p><strong>Длительность:</strong> <span th:text="${serviceType.durationHours} + ' ч'"></span></p>
+    </div>
+  </div>
+  <a th:href="@{/service-types}" class="btn btn-secondary mt-3">Назад к списку</a>
+</div>
+</body>
+</html>
