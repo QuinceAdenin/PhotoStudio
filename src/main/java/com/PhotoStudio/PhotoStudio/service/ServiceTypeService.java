@@ -15,16 +15,20 @@ public class ServiceTypeService {
         this.serviceTypeRepository = serviceTypeRepository;
     }
 
+    public ServiceType save(ServiceType serviceType) {
+        if (serviceType.getId() == null) {
+            Long maxId = serviceTypeRepository.findMaxId();
+            serviceType.setId(maxId != null ? maxId + 1 : 1);
+        }
+        return serviceTypeRepository.save(serviceType);
+    }
+
     public List<ServiceType> findAll() {
         return serviceTypeRepository.findAll();
     }
 
     public ServiceType findById(Long id) {
         return serviceTypeRepository.findById(id).orElse(null);
-    }
-
-    public ServiceType save(ServiceType serviceType) {
-        return serviceTypeRepository.save(serviceType);
     }
 
     public void deleteById(Long id) {

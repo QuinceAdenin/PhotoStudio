@@ -2,27 +2,32 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Форма услуги</title>
+    <title th:text="${serviceType.id} ? 'Редактирование услуги' : 'Новая услуга'"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-4">
-    <h1 th:text="${serviceType.id} ? 'Изменить услугу' : 'Новая услуга'"></h1>
-    <form th:action="@{/service-types}" th:object="${serviceType}" method="post">
+    <h1 th:text="${serviceType.id} ? 'Редактирование услуги' : 'Новая услуга'"></h1>
+    <form th:action="@{/service_types}" th:object="${serviceType}" method="post">
+        <input type="hidden" th:field="*{id}"> <!-- Обязательное поле -->
+
         <div class="mb-3">
             <label class="form-label">Название:</label>
             <input type="text" class="form-control" th:field="*{name}" required>
         </div>
+
         <div class="mb-3">
             <label class="form-label">Описание:</label>
             <textarea class="form-control" th:field="*{description}"></textarea>
         </div>
+
         <div class="mb-3">
             <label class="form-label">Длительность (часы):</label>
-            <input type="number" class="form-control" th:field="*{durationHours}" required>
+            <input type="number" class="form-control" th:field="*{durationHours}" required min="1">
         </div>
+
         <button type="submit" class="btn btn-primary">Сохранить</button>
-        <a th:href="@{/service-types}" class="btn btn-secondary">Отмена</a>
+        <a th:href="@{/service_types}" class="btn btn-secondary">Отмена</a>
     </form>
 </div>
 </body>

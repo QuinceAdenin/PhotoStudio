@@ -15,6 +15,15 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    public Employee save(Employee employee) {
+        if (employee.getId() == null) {
+            Long maxId = employeeRepository.findMaxId();
+            employee.setId(maxId != null ? maxId + 1 : 1);
+        }
+        return employeeRepository.save(employee);
+    }
+
+
     public List<Employee> findAll() {
         return employeeRepository.findAll();
     }
@@ -23,9 +32,6 @@ public class EmployeeService {
         return employeeRepository.findById(id).orElse(null);
     }
 
-    public Employee save(Employee employee) {
-        return employeeRepository.save(employee);
-    }
 
     public void deleteById(Long id) {
         employeeRepository.deleteById(id);
@@ -34,4 +40,6 @@ public class EmployeeService {
     public List<Employee> findByPosition(String position) {
         return employeeRepository.findByPosition(position);
     }
+
+
 }

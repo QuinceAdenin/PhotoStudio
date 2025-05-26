@@ -28,11 +28,7 @@
             <td>
                 <a th:href="@{/employees/{id}/edit(id=${employee.id})}" class="btn btn-warning">Изменить</a>
                 <a th:href="@{/employees/{id}/delete(id=${employee.id})}" class="btn btn-danger">Удалить</a>
-            </td>
-            <td>
-                <a th:href="@{/clients/{id}(id=${client.id})}" class="btn btn-info">Просмотр</a>
-                <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="btn btn-warning">Изменить</a>
-                <a th:href="@{/clients/{id}/delete(id=${client.id})}" class="btn btn-danger">Удалить</a>
+                <a th:href="@{/employees/{id}(id=${employee.id})}" class="btn btn-info">Просмотр</a>
             </td>
         </tr>
         </tbody>
