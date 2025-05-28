@@ -80,5 +80,38 @@ public class PhotoSessionController {
 //        model.addAttribute("serviceTypes", serviceTypeRepository.findAll());
 //        return "sessions/list";
 //    }
+// Форма редактирования
+@GetMapping("/{id}/edit")
+public String showEditForm(@PathVariable Long id, Model model) {
+    PhotoSession session = photoSessionService.findById(id);
+    model.addAttribute("photoSession", session);
+    return "sessions/form";
+}
 
+    @PostMapping("/{id}")
+    public String updateSession(
+            @PathVariable Long id,
+            @ModelAttribute("photoSession") PhotoSession photoSession
+    ) {
+        // Устанавливаем ID из URL в объект
+        photoSession.setId(id);
+
+        // Обновляем только необходимые поля
+        PhotoSession existingSession = photoSessionService.findById(id);
+        existingSession.setClient(photoSession.getClient());
+        existingSession.setPhotographer(photoSession.getPhotographer());
+        existingSession.setServiceType(photoSession.getServiceType());
+        existingSession.setStartTime(photoSession.getStartTime());
+        existingSession.setStatus(photoSession.getStatus());
+        existingSession.setNotes(photoSession.getNotes());
+
+        photoSessionService.save(existingSession);
+        return "redirect:/sessions";
+    }
+    // Удаление фотосессии
+    @GetMapping("/{id}/delete")
+    public String deleteSession(@PathVariable Long id) {
+        photoSessionService.deleteById(id);
+        return "redirect:/sessions";
+    }
 }

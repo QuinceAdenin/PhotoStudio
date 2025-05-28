@@ -2,107 +2,130 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create Session</title>
+    <title th:text="${photoSession.id} ? 'Редактирование фотосессии' : 'Новая фотосессия'"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .form-container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 30px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
-        .form-group {
-            margin-bottom: 15px;
+        .form-label {
+            font-weight: 500;
+            color: #2c3e50;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        select, input[type="datetime-local"], textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .btn-submit {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .required-star {
+            color: #dc3545;
+            margin-left: 3px;
         }
     </style>
 </head>
 <body>
 <div class="form-container">
-    <h1>Create New Photo Session</h1>
-    <form th:action="@{/sessions}" th:object="${photoSession}" method="post">
+    <h1 class="mb-4" th:text="${photoSession.id} ? '✏️ Редактирование фотосессии' : '➕ Новая фотосессия'"></h1>
+
+    <form th:action="${photoSession.id != null} ? @{/sessions/{id}(id=${photoSession.id})} : @{/sessions}"
+          th:object="${photoSession}"
+          method="post">
+
+        <!-- Скрытое поле для ID -->
+        <input type="hidden" th:field="*{id}">
+
         <!-- Клиент -->
-        <div class="mb-3">
-            <label class="form-label">Client:</label>
+        <div class="mb-4">
+            <label class="form-label">
+                Клиент <span class="required-star">*</span>
+            </label>
             <select class="form-select" th:field="*{client}" required>
-                <option value="">-- Select Client --</option>
+                <option value="">-- Выберите клиента --</option>
                 <option
                         th:each="client : ${clients}"
                         th:value="${client.id}"
                         th:text="${client.fullName}"
-                ></option>
-            </select>
-        </div>
-
-        <!-- Фотограф -->
-        <div class="mb-3">
-            <label class="form-label">Photographer:</label>
-            <select class="form-select" th:field="*{photographer}">
-                <option value="">-- Select Photographer --</option>
-                <option
-                        th:each="employee : ${employees}"
-                        th:value="${employee.id}"
-                        th:text="${employee.fullName}"
-                ></option>
+                        th:selected="${client.id == photoSession.client?.id}">
+                </option>
             </select>
         </div>
 
         <!-- Услуга -->
-        <div class="mb-3">
-            <label class="form-label">Service Type:</label>
+        <div class="mb-4">
+            <label class="form-label">
+                Услуга <span class="required-star">*</span>
+            </label>
             <select class="form-select" th:field="*{serviceType}" required>
-                <option value="">-- Select Service --</option>
+                <option value="">-- Выберите услугу --</option>
                 <option
                         th:each="service : ${serviceTypes}"
                         th:value="${service.id}"
                         th:text="${service.name} + ' (' + ${service.durationHours} + ' ч)'"
-                ></option>
+                        th:selected="${service.id == photoSession.serviceType?.id}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Фотограф -->
+        <div class="mb-4">
+            <label class="form-label">Фотограф</label>
+            <select class="form-select" th:field="*{photographer}">
+                <option value="">-- Не назначен --</option>
+                <option
+                        th:each="employee : ${employees}"
+                        th:value="${employee.id}"
+                        th:text="${employee.fullName}"
+                        th:selected="${employee.id == photoSession.photographer?.id}">
+                </option>
             </select>
         </div>
 
         <!-- Дата и время -->
-        <div class="mb-3">
-            <label class="form-label">Date & Time:</label>
-            <input type="datetime-local" class="form-control" th:field="*{startTime}" required>
+        <div class="mb-4">
+            <label class="form-label">
+                Дата и время <span class="required-star">*</span>
+            </label>
+            <input
+                    type="datetime-local"
+                    class="form-control"
+                    th:field="*{startTime}"
+                    required
+                    th:value="${#temporals.format(photoSession.startTime, 'yyyy-MM-dd''T''HH:mm')}">
         </div>
 
         <!-- Статус -->
-        <div class="mb-3">
-            <label class="form-label">Status:</label>
+        <div class="mb-4">
+            <label class="form-label">
+                Статус <span class="required-star">*</span>
+            </label>
             <select class="form-select" th:field="*{status}" required>
-                <option value="planned">Planned</option>
-                <option value="completed">Completed</option>
-                <option value="canceled">Canceled</option>
+                <option value="planned" th:selected="${photoSession.status == 'planned'}">Запланирована</option>
+                <option value="completed" th:selected="${photoSession.status == 'completed'}">Завершена</option>
+                <option value="canceled" th:selected="${photoSession.status == 'canceled'}">Отменена</option>
             </select>
         </div>
 
         <!-- Заметки -->
-        <div class="mb-3">
-            <label class="form-label">Notes:</label>
-            <textarea class="form-control" th:field="*{notes}"></textarea>
+        <div class="mb-4">
+            <label class="form-label">Заметки</label>
+            <textarea
+                    class="form-control"
+                    th:field="*{notes}"
+                    rows="3"
+                    placeholder="Дополнительная информация...">
+            </textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Session</button>
-        <a th:href="@{/sessions}" class="btn btn-secondary">Cancel</a>
+        <!-- Кнопки -->
+        <div class="d-flex gap-2 justify-content-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i>
+                <span th:text="${photoSession.id} ? ' Сохранить' : ' Создать'"></span>
+            </button>
+            <a th:href="@{/sessions}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle"></i> Отмена
+            </a>
+        </div>
     </form>
 </div>
 

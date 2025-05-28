@@ -22,12 +22,18 @@ public class PhotoSessionService {
     }
 
     public PhotoSession findById(Long id) {
-        return photoSessionRepository.findById(id).orElse(null);
+        return photoSessionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Фотосессия не найдена"));
     }
 
     public PhotoSession save(PhotoSession photoSession) {
+        if (photoSession.getId() == null) {
+            Long maxId = photoSessionRepository.findMaxId();
+            photoSession.setId(maxId + 1);
+        }
         return photoSessionRepository.save(photoSession);
     }
+
 
     public void deleteById(Long id) {
         photoSessionRepository.deleteById(id);

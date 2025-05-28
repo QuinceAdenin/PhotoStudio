@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PhotoSession {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -34,4 +34,60 @@ public class PhotoSession {
     private String status;
 
     private String notes;
+
+    public Long getId() {
+        return id;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public Employee getPhotographer() {
+        return photographer;
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public void setPhotographer(Employee photographer) {
+        this.photographer = photographer;
+    }
+
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
 }

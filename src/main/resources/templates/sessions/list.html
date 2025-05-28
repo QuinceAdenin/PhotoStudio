@@ -2,27 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Photo Sessions</title>
+  <title>Фотосессии</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .action-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+  </style>
 </head>
 <body>
 <div class="container mt-4">
-  <h1>Photo Sessions</h1>
-
-  <div class="mb-3">
-    <a th:href="@{/sessions/new}" class="btn btn-primary">Create New photoSession</a>
+  <!-- Шапка с навигацией -->
+  <div class="mb-4">
+    <a th:href="@{/}" class="btn btn-outline-secondary mb-3">
+      ← На главную
+    </a>
+    <div class="action-header">
+      <h1>Фотосессии</h1>
+      <a th:href="@{/sessions/new}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Новая фотосессия
+      </a>
+    </div>
   </div>
 
-  <table class="table">
-    <thead>
+  <!-- Таблица -->
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
     <tr>
       <th>ID</th>
-      <th>Client</th>
-      <th>Service</th>
-      <th>Photographer</th>
-      <th>Date & Time</th>
-      <th>Status</th>
-      <th>Actions</th>
+      <th>Клиент</th>
+      <th>Услуга</th>
+      <th>Фотограф</th>
+      <th>Дата и время</th>
+      <th>Статус</th>
+      <th>Действия</th>
     </tr>
     </thead>
     <tbody>
@@ -30,16 +47,38 @@
       <td th:text="${photoSession.id}"></td>
       <td th:text="${photoSession.client.fullName}"></td>
       <td th:text="${photoSession.serviceType.name}"></td>
-      <td th:text="${photoSession.photographer.fullName}"></td>
+      <td th:text="${photoSession.photographer?.fullName ?: 'Не назначен'}"></td>
       <td th:text="${#temporals.format(photoSession.startTime, 'dd.MM.yyyy HH:mm')}"></td>
-      <td th:text="${photoSession.status}"></td>
       <td>
-        <a th:href="@{/sessions/{id}(id=${photoSession.id})}" class="btn btn-info">View</a>
+                    <span th:class="${'badge bg-' +
+                        (photoSession.status == 'planned' ? 'info' :
+                        photoSession.status == 'completed' ? 'success' : 'danger')}">
+                        <span th:text="${photoSession.status}"></span>
+                    </span>
+      </td>
+      <td>
+        <div class="btn-group" role="group">
+          <a th:href="@{/sessions/{id}(id=${photoSession.id})}"
+             class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-eye"></i>
+          </a>
+          <a th:href="@{/sessions/{id}/edit(id=${photoSession.id})}"
+             class="btn btn-sm btn-outline-warning">
+            <i class="bi bi-pencil"></i>
+          </a>
+          <a th:href="@{/sessions/{id}/delete(id=${photoSession.id})}"
+             class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-trash"></i>
+          </a>
+        </div>
       </td>
     </tr>
     </tbody>
   </table>
 </div>
+
+<!-- Подключение иконок Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

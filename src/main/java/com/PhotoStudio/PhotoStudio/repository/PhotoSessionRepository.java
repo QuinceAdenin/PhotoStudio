@@ -12,7 +12,10 @@ import java.util.List;
 public interface PhotoSessionRepository extends JpaRepository<PhotoSession, Long> {
     List<PhotoSession> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
     List<PhotoSession> findByStatus(String status);
-
+    @Query("SELECT MAX(ps.id) FROM PhotoSession ps WHERE ps.status <> 'deleted'")
+    Long findMaxActiveId();
+    @Query("SELECT MAX(ps.id) FROM PhotoSession ps")
+    Long findMaxId();
     @Query("SELECT ps FROM PhotoSession ps " +
             "JOIN FETCH ps.client " +
             "JOIN FETCH ps.photographer " +
