@@ -39,7 +39,7 @@ public class ClientService {
     }
 
     public List<Client> findAll() {
-        return clientRepository.findAll();
+        return clientRepository.findAllOrderedById();
     }
 
     public Client findById(Long id) {

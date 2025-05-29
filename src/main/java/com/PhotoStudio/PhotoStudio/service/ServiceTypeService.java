@@ -24,7 +24,7 @@ public class ServiceTypeService {
     }
 
     public List<ServiceType> findAll() {
-        return serviceTypeRepository.findAll();
+        return serviceTypeRepository.findAllOrderedById();
     }
 
     public ServiceType findById(Long id) {

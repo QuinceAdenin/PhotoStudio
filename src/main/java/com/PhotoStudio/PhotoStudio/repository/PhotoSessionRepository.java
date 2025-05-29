@@ -21,4 +21,6 @@ public interface PhotoSessionRepository extends JpaRepository<PhotoSession, Long
             "JOIN FETCH ps.photographer " +
             "JOIN FETCH ps.serviceType")
     List<PhotoSession> findAllWithDetails();
+    @Query("SELECT ps FROM PhotoSession ps ORDER BY ps.id ASC")
+    List<PhotoSession> findAllOrderedById();
 }

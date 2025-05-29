@@ -14,4 +14,6 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Long findMaxId();
     Client findByPhone(String phone);
     Client findByEmail(String email);
+    @Query("SELECT c FROM Client c ORDER BY c.id ASC")
+    List<Client> findAllOrderedById();
 }
