@@ -29,7 +29,7 @@ public class PhotoSessionService {
     public PhotoSession save(PhotoSession photoSession) {
         if (photoSession.getId() == null) {
             Long maxId = photoSessionRepository.findMaxId();
-            photoSession.setId(maxId + 1);
+            photoSession.setId(maxId != null ? maxId + 1 : 1);
         }
         return photoSessionRepository.save(photoSession);
     }

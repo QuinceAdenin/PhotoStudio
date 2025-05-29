@@ -93,17 +93,19 @@ public String showEditForm(@PathVariable Long id, Model model) {
             @PathVariable Long id,
             @ModelAttribute("photoSession") PhotoSession photoSession
     ) {
-        // Устанавливаем ID из URL в объект
-        photoSession.setId(id);
-
-        // Обновляем только необходимые поля
         PhotoSession existingSession = photoSessionService.findById(id);
+
+        // Обновляем только изменившиеся поля
         existingSession.setClient(photoSession.getClient());
         existingSession.setPhotographer(photoSession.getPhotographer());
         existingSession.setServiceType(photoSession.getServiceType());
-        existingSession.setStartTime(photoSession.getStartTime());
         existingSession.setStatus(photoSession.getStatus());
         existingSession.setNotes(photoSession.getNotes());
+
+        // Обновляем дату только если она была изменена
+        if (photoSession.getStartTime() != null) {
+            existingSession.setStartTime(photoSession.getStartTime());
+        }
 
         photoSessionService.save(existingSession);
         return "redirect:/sessions";

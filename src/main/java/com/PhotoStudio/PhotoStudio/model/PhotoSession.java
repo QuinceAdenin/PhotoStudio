@@ -2,6 +2,7 @@ package com.PhotoStudio.PhotoStudio.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -28,6 +29,7 @@ public class PhotoSession {
     private ServiceType serviceType;
 
     @Column(name = "start_time", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime startTime;
 
     @Column(nullable = false)
