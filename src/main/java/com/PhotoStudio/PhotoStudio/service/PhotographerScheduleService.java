@@ -52,4 +52,25 @@ public class PhotographerScheduleService {
     public long countAll() {
         return scheduleRepository.count();
     }
+
+    public List<PhotographerSchedule> findAll() {
+        return scheduleRepository.findAll();
+    }
+
+    public PhotographerSchedule findById(Long id) {
+        return scheduleRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
+    }
+
+    public PhotographerSchedule save(PhotographerSchedule schedule) {
+        return scheduleRepository.save(schedule);
+    }
+
+    public void deleteById(Long id) {
+        scheduleRepository.deleteById(id);
+    }
+
+    public List<PhotographerSchedule> findByEmployeeId(Long employeeId) {
+        return scheduleRepository.findByEmployeeId(employeeId);
+    }
+
 }

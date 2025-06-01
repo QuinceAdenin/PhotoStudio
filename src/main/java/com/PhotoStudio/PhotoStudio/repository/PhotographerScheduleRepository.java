@@ -21,4 +21,5 @@ public interface PhotographerScheduleRepository extends JpaRepository<Photograph
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime
     );
+    List<PhotographerSchedule> findByEmployeeId(Long employeeId);
 }

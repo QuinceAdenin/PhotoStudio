@@ -78,4 +78,7 @@ public class PhotoSessionService {
         return photoSessionRepository.findByStatus(status);
     }
 
+    public List<PhotoSession> findByPhotographerId(Long photographerId) {
+        return photoSessionRepository.findByPhotographerId(photographerId);
+    }
 }

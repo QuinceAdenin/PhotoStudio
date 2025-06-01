@@ -1,9 +1,8 @@
-<!-- calendar.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Календарь</title>
+    <title>Календарь фотографов</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
     <style>
@@ -11,6 +10,58 @@
             max-width: 1200px;
             margin: 30px auto;
             padding: 20px;
+        }
+
+        /* Курсор-указатель для событий */
+        .fc-event {
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            white-space: normal !important;
+            line-height: 1.3;
+        }
+
+        /* Запрет переноса на другие дни */
+        .fc-daygrid-event {
+            margin-right: 0 !important;
+        }
+
+        /* Стили для модального окна */
+        .modal-content {
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .session-details {
+            padding: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-label {
+            flex: 0 0 150px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #333;
+        }
+
+        .badge-info { background-color: #0dcaf0; }
+        .badge-success { background-color: #198754; }
+        .badge-danger { background-color: #dc3545; }
+
+        /* Убираем стрелку закрытия в заголовке */
+        .modal-header .btn-close {
+            display: none;
         }
     </style>
 </head>
@@ -22,11 +73,31 @@
     <div id="calendar" class="calendar-container"></div>
 </div>
 
+<!-- Модальное окно для деталей события -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalTitle">Детали события</h5>
+            </div>
+            <div class="modal-body session-details">
+                <div id="eventDetails"></div>
+            </div>
+            <!-- Убраны кнопки в footer -->
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales/ru.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
+        const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+        const eventModalTitle = document.getElementById('eventModalTitle');
+        const eventDetails = document.getElementById('eventDetails');
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'ru',
@@ -37,11 +108,122 @@
             },
             events: '/api/schedule/events',
             eventClick: function(info) {
-                alert('Событие: ' + info.event.title);
+                const event = info.event;
+                eventModalTitle.textContent = event.title;
+
+                let detailsHTML = '';
+
+                if (event.extendedProps.type === 'session') {
+                    detailsHTML = `
+                        <div class="detail-row">
+                            <div class="detail-label">Клиент:</div>
+                            <div class="detail-value">${event.extendedProps.client || 'Не указан'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Услуга:</div>
+                            <div class="detail-value">${event.extendedProps.serviceType || 'Не указана'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Фотограф:</div>
+                            <div class="detail-value">${event.extendedProps.photographer || 'Не назначен'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Дата и время:</div>
+                            <div class="detail-value">${event.extendedProps.startTimeFormatted} - ${event.extendedProps.endTimeFormatted}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Статус:</div>
+                            <div class="detail-value">
+                                <span class="badge ${getStatusClass(event.extendedProps.status)}">
+                                    ${getStatusText(event.extendedProps.status)}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Заметки:</div>
+                            <div class="detail-value">${event.extendedProps.notes || 'Нет заметок'}</div>
+                        </div>
+                    `;
+                } else {
+                    detailsHTML = `
+                        <div class="detail-row">
+                            <div class="detail-label">Сотрудник:</div>
+                            <div class="detail-value">${event.extendedProps.employee || 'Не указан'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Дата:</div>
+                            <div class="detail-value">${event.extendedProps.dateFormatted}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Начало:</div>
+                            <div class="detail-value">${event.extendedProps.startTimeFormatted}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Окончание:</div>
+                            <div class="detail-value">${event.extendedProps.endTimeFormatted}</div>
+                        </div>
+                    `;
+                }
+
+                eventDetails.innerHTML = detailsHTML;
+                eventModal.show();
+
+                // Закрываем модальное окно при клике в любом месте
+                setTimeout(() => {
+                    document.querySelector('.modal-content').addEventListener('click', () => {
+                        eventModal.hide();
+                    });
+                }, 100);
+            },
+            eventContent: function(arg) {
+                // Укороченный заголовок для отображения
+                let title = arg.event.title;
+                if (title.length > 30) {
+                    title = title.substring(0, 30) + '...';
+                }
+
+                // Добавляем иконку для фотосессий
+                const typeIcon = arg.event.extendedProps.type === 'session'
+                    ? '<i class="fas fa-camera me-1"></i>'
+                    : '<i class="fas fa-calendar me-1"></i>';
+
+                return {
+                    html: `${typeIcon} ${title}`
+                };
+            },
+            eventDidMount: function(info) {
+                // Убираем перенос на другие дни
+                const eventEl = info.el;
+                if (eventEl.classList.contains('fc-event-mirror')) {
+                    eventEl.style.display = 'none';
+                }
             }
         });
+
         calendar.render();
+
+        // Функция для получения класса CSS статуса
+        function getStatusClass(status) {
+            switch (status) {
+                case 'planned': return 'badge-info';
+                case 'completed': return 'badge-success';
+                case 'canceled': return 'badge-danger';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // Функция для получения текста статуса
+        function getStatusText(status) {
+            switch (status) {
+                case 'planned': return 'Запланирована';
+                case 'completed': return 'Завершена';
+                case 'canceled': return 'Отменена';
+                default: return status;
+            }
+        }
     });
 </script>
+<!-- Подключение FontAwesome для иконок -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </body>
 </html>
