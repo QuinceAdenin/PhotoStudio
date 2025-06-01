@@ -1,20 +1,23 @@
 package com.PhotoStudio.PhotoStudio.controller;
 
+import com.PhotoStudio.PhotoStudio.model.Employee;
 import com.PhotoStudio.PhotoStudio.model.PhotoSession;
+import com.PhotoStudio.PhotoStudio.model.ServiceType;
 import com.PhotoStudio.PhotoStudio.repository.ClientRepository;
 import com.PhotoStudio.PhotoStudio.repository.EmployeeRepository;
+import com.PhotoStudio.PhotoStudio.repository.PhotoSessionRepository;
 import com.PhotoStudio.PhotoStudio.repository.ServiceTypeRepository;
 import com.PhotoStudio.PhotoStudio.service.PhotoSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/sessions")
@@ -23,13 +26,15 @@ public class PhotoSessionController {
     private final ClientRepository clientRepository;
     private final EmployeeRepository employeeRepository;
     private final ServiceTypeRepository serviceTypeRepository;
+    private final PhotoSessionRepository photoSessionRepository;
 
     @Autowired
-    public PhotoSessionController(PhotoSessionService photoSessionService, ClientRepository clientRepository, EmployeeRepository employeeRepository, ServiceTypeRepository serviceTypeRepository) {
+    public PhotoSessionController(PhotoSessionService photoSessionService, ClientRepository clientRepository, EmployeeRepository employeeRepository, ServiceTypeRepository serviceTypeRepository, PhotoSessionRepository photoSessionRepository) {
         this.photoSessionService = photoSessionService;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
         this.serviceTypeRepository = serviceTypeRepository;
+        this.photoSessionRepository = photoSessionRepository;
     }
 
     @ModelAttribute
@@ -67,9 +72,26 @@ public class PhotoSessionController {
     }
 
     @PostMapping
-    public String createSession(@ModelAttribute("photoSession") PhotoSession photoSession) {
-        photoSessionService.save(photoSession);
-        return "redirect:/sessions"; // Перенаправление на список сессий после сохранения
+    public String createSession(
+            @ModelAttribute("photoSession") PhotoSession photoSession,
+            Model model
+    ) {
+        try {
+            // Убедимся, что ID не установлен для новых сессий
+            if (photoSession.getId() != null) {
+                photoSession.setId(null);
+            }
+
+            photoSessionService.save(photoSession);
+            return "redirect:/sessions";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("photoSession", photoSession);
+            model.addAttribute("clients", clientRepository.findAll());
+            model.addAttribute("employees", employeeRepository.findAll());
+            model.addAttribute("serviceTypes", serviceTypeRepository.findAll());
+            return "sessions/form";
+        }
     }
 
 //    @GetMapping("/search")
@@ -91,24 +113,46 @@ public String showEditForm(@PathVariable Long id, Model model) {
     @PostMapping("/{id}")
     public String updateSession(
             @PathVariable Long id,
-            @ModelAttribute("photoSession") PhotoSession photoSession
+            @ModelAttribute("photoSession") PhotoSession photoSession,
+            Model model
     ) {
-        PhotoSession existingSession = photoSessionService.findById(id);
+        try {
+            PhotoSession existingSession = photoSessionService.findById(id);
 
-        // Обновляем только изменившиеся поля
-        existingSession.setClient(photoSession.getClient());
-        existingSession.setPhotographer(photoSession.getPhotographer());
-        existingSession.setServiceType(photoSession.getServiceType());
-        existingSession.setStatus(photoSession.getStatus());
-        existingSession.setNotes(photoSession.getNotes());
+            // Сохраняем оригинальные значения для проверки изменений
+            Employee originalPhotographer = existingSession.getPhotographer();
+            LocalDateTime originalStartTime = existingSession.getStartTime();
+            ServiceType originalServiceType = existingSession.getServiceType();
 
-        // Обновляем дату только если она была изменена
-        if (photoSession.getStartTime() != null) {
+            // Обновляем поля
+            existingSession.setClient(photoSession.getClient());
+            existingSession.setPhotographer(photoSession.getPhotographer());
+            existingSession.setServiceType(photoSession.getServiceType());
+            existingSession.setStatus(photoSession.getStatus());
+            existingSession.setNotes(photoSession.getNotes());
             existingSession.setStartTime(photoSession.getStartTime());
-        }
 
-        photoSessionService.save(existingSession);
-        return "redirect:/sessions";
+            // Проверяем, изменились ли критические параметры
+            boolean needsValidation =
+                    !Objects.equals(originalPhotographer, photoSession.getPhotographer()) ||
+                            !Objects.equals(originalStartTime, photoSession.getStartTime()) ||
+                            !Objects.equals(originalServiceType, photoSession.getServiceType());
+
+            if (needsValidation) {
+                photoSessionService.save(existingSession);
+            } else {
+                photoSessionRepository.save(existingSession);
+            }
+
+            return "redirect:/sessions";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("photoSession", photoSession);
+            model.addAttribute("clients", clientRepository.findAll());
+            model.addAttribute("employees", employeeRepository.findAll());
+            model.addAttribute("serviceTypes", serviceTypeRepository.findAll());
+            return "sessions/form";
+        }
     }
     // Удаление фотосессии
     @GetMapping("/{id}/delete")

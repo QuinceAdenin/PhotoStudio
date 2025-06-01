@@ -2,8 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${photoSession.id} ? 'Редактирование фотосессии' : 'Новая фотосессия'"></title>
+    <title th:text="${photoSession.id != null} ? 'Редактирование фотосессии' : 'Новая фотосессия'"></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Подключаем иконки Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         .form-container {
             max-width: 800px;
@@ -21,11 +23,26 @@
             color: #dc3545;
             margin-left: 3px;
         }
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+        .error-icon {
+            color: #dc3545;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
 <div class="form-container">
-    <h1 class="mb-4" th:text="${photoSession.id} ? '✏️ Редактирование фотосессии' : '➕ Новая фотосессия'"></h1>
+    <!-- Измененный заголовок с правильной проверкой ID -->
+    <h1 class="mb-4" th:text="${photoSession.id != null} ? '✏️ Редактирование фотосессии' : '➕ Новая фотосессия'"></h1>
+
+    <!-- Блок для отображения ошибок -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill error-icon"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <form th:action="${photoSession.id != null} ? @{/sessions/{id}(id=${photoSession.id})} : @{/sessions}"
           th:object="${photoSession}"
@@ -119,7 +136,7 @@
         <div class="d-flex gap-2 justify-content-end">
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-save"></i>
-                <span th:text="${photoSession.id} ? ' Сохранить' : ' Создать'"></span>
+                <span th:text="${photoSession.id != null} ? ' Сохранить' : ' Создать'"></span>
             </button>
             <a th:href="@{/sessions}" class="btn btn-outline-secondary">
                 <i class="bi bi-x-circle"></i> Отмена
@@ -129,5 +146,31 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const error = document.querySelector('.alert-danger');
+        if (error) {
+            // Подсвечиваем связанные поля
+            const fieldsToHighlight = [
+                'photographer',
+                'startTime',
+                'serviceType'
+            ];
+
+            fieldsToHighlight.forEach(fieldName => {
+                const field = document.querySelector(`[name="${fieldName}"]`);
+                if (field) {
+                    field.classList.add('is-invalid');
+
+                    // Добавляем иконку ошибки после поля
+                    const errorIcon = document.createElement('div');
+                    errorIcon.className = 'invalid-feedback d-flex align-items-center';
+                    errorIcon.innerHTML = '<i class="bi bi-exclamation-circle me-2"></i> Поле содержит ошибку';
+                    field.parentNode.appendChild(errorIcon);
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>

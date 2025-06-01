@@ -3,6 +3,7 @@ package com.PhotoStudio.PhotoStudio.controller;
 import com.PhotoStudio.PhotoStudio.service.ClientService;
 import com.PhotoStudio.PhotoStudio.service.EmployeeService;
 import com.PhotoStudio.PhotoStudio.service.PhotoSessionService;
+import com.PhotoStudio.PhotoStudio.service.PhotographerScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,16 +14,19 @@ public class HomeController {
     private final PhotoSessionService photoSessionService;
     private final ClientService clientService;
     private final EmployeeService employeeService;
+    private final PhotographerScheduleService scheduleService;
 
     @Autowired
     public HomeController(
             PhotoSessionService photoSessionService,
             ClientService clientService,
-            EmployeeService employeeService
+            EmployeeService employeeService,
+            PhotographerScheduleService scheduleService
     ) {
         this.photoSessionService = photoSessionService;
         this.clientService = clientService;
         this.employeeService = employeeService;
+        this.scheduleService = scheduleService;
     }
 
     @GetMapping("/")
@@ -30,6 +34,7 @@ public class HomeController {
         model.addAttribute("sessionCount", photoSessionService.findAll().size());
         model.addAttribute("clientCount", clientService.findAll().size());
         model.addAttribute("employeeCount", employeeService.findAll().size());
+        model.addAttribute("scheduleCount", scheduleService.countAll());
         return "home";
     }
 }
